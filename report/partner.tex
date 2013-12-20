@@ -1,0 +1,38 @@
+\documentclass{report}
+\usepackage[spanish]{babel}
+
+\title{Resumen de Clientes}
+\author{${user.name}}
+\logo{${helper.putImage(company.logo, scale=0.3)}}
+\name{${company.name}}
+
+\begin{document}
+
+\maketitle
+
+<% accum = 0 %>
+
+% for par in objects:  
+\section{${par.name}}
+
+<% accum += 1%>
+
+\begin{itemize}
+%	if par.document_type_id:
+	\item ${par.document_type_id.name}: ${par.document_number}
+%	endif
+%	if par.street:
+	\item ${par.street}
+%	endif
+%	if par.street2:
+	\item ${par.street2}
+%	endif
+	\item Debe: ${par.debit}
+\end{itemize}
+
+\fancyfoot[C]{No de clientes ${accum}}
+
+% endfor
+
+\end{document}
+
