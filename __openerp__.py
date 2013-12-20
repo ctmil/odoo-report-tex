@@ -28,7 +28,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #
 ##############################################################################
-    'category': 'Reporting', # i.e a technical module, not shown in Application install menu
 {   'author': 'Cristian S. Rocha',
     'auto_install': False,
     'category': 'Reporting',
@@ -38,5 +37,5 @@
     'installable': True,
     'name': 'Latex Report Engine',
     'url': 'http://moldeo.coop/',
-    'version': '0.1'}
+    'version': '0.2'}
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
