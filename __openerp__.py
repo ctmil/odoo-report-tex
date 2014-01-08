@@ -37,5 +37,5 @@
     'installable': True,
     'name': 'Latex Report Engine',
     'url': 'http://moldeo.coop/',
-    'version': '0.2'}
+    'version': '0.3'}
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

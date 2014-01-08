@@ -54,6 +54,17 @@ from report_helper import LatexHelper
 
 _logger = logging.getLogger(__name__)
 
+
+# States to parse log file
+LOGNOMESSAGE = 0
+LOGWAITLINE  = 1
+LOGINLINE    = 2
+LOGINHELP    = 3
+
+# Text expected in log file to rerun
+# Rerun check need <rerunfilecheck> package
+RERUNTEXT = "Rerun to get outlines right"
+
 def mako_template(text):
     """Build a Mako template.
 
@@ -124,35 +135,35 @@ class LatexParser(report_sxw):
         if resource_path:
             env.update(dict(TEXINPUTS="%s:" % resource_path))
 
-        _logger.info("Environment Variables: %s" % env)
+        _logger.debug("Environment Variables: %s" % env)
 
         stderr_fd, stderr_path = tempfile.mkstemp(dir=tmp_dir,text=True)
         try:
-            status = subprocess.call(command, stderr=stderr_fd, env=env)
-
-            # Try to rerun if errors happens
-            if status:
-                _logger.info("pdflatex return %i. Try rerun." % status)
-                status = subprocess.call(command, stderr=stderr_fd, env=env)
-
-            if status:
-                import pdb; pdb.set_trace()
+            rerun = True
+            countrerun = 1
+            _logger.info("Source LaTex File: %s" % os.path.join(tmp_dir, tex_filename))
+            while rerun:
+                try:
+                    _logger.info("Run count: %i" % countrerun)
+                    output = subprocess.check_output(command, stderr=stderr_fd, env=env)
+                except subprocess.CalledProcessError, r:
+                    messages, rerun = self.parse_log(tmp_dir, log_filename)
+                    for m in messages:
+                        _logger.error("{message}:{lineno}:{line}".format(**m))
+                    raise except_osv(_('Latex error'),
+                          _("The command 'pdflatex' failed with error. Read logs."))
+                messages, rerun = self.parse_log(tmp_dir, log_filename)
+                countrerun = countrerun + 1
 
             os.close(stderr_fd) # ensure flush before reading
             stderr_fd = None # avoid closing again in finally block
-            fobj = open(stderr_path, 'r')
-            error_message = fobj.read()
-            fobj.close()
-            if not error_message:
-                error_message = _('No diagnosis message was provided')
-            else:
-                error_message = _('The following diagnosis message was provided:\n') + error_message
-            if status :
-                raise except_osv(_('Latex error' ),
-                                 _("The command 'pdflatex' failed with error code = %s. Message: %s") % (status, error_message))
+
             pdf_file = open(os.path.join(tmp_dir, pdf_filename), 'rb')
             pdf = pdf_file.read()
             pdf_file.close()
+        except:
+            raise except_osv(_('Latex error'),
+                  _("The command 'pdflatex' failed with error. Read logs."))
         finally:
             if stderr_fd is not None:
                 os.close(stderr_fd)
@@ -175,6 +186,53 @@ class LatexParser(report_sxw):
         if not res :
             return src
         return res
+
+    def parse_log(self, tmp_dir, log_filename):
+        log_file = open(os.path.join(tmp_dir, log_filename))
+
+        messages = []
+        warnings = []
+        rerun = False
+        state = LOGNOMESSAGE
+
+        for line in log_file:
+            if state==LOGNOMESSAGE:
+                if line[0] == "!": # Start message
+                    state = LOGWAITLINE
+                    messages.append({
+                        'message': line[2:-1].strip(),
+                    })
+                elif RERUNTEXT in line:
+                    rerun = True
+                elif "LaTeX Warning" in line:
+                    warnings.append(line.strip().split(':')[1])
+            elif state==LOGWAITLINE:
+                if line[0] == 'l': # Get line number
+                    state=LOGINLINE
+                    lineno, cleanline = line[2:].split(' ', 1)
+                    messages[-1].update({
+                        'lineno': int(lineno),
+                        'line': "%s" % cleanline.strip(),
+                    })
+            elif state==LOGINLINE:
+                if True: # Else get last line
+                    state=LOGINHELP
+                    cleanline = line.strip()
+                    messages[-1].update({
+                        'line': "%s<!>%s" % (messages[-1].get('line', ''), cleanline),
+                    })
+            elif state==LOGINHELP:
+                if line=="\n": # No help, then end message
+                    state = LOGNOMESSAGE
+                else: 
+                    cleanline = line.strip()
+                    messages[-1].update({
+                        'help': "%s %s" % (messages[-1].get('help', ''), cleanline),
+                    })
+
+        rerun = rerun or ([ w for w in warnings if "Rerun" in w ] != [])
+
+        return messages, rerun
 
     # override needed to keep the attachments storing procedure
     def create_single_pdf(self, cursor, uid, ids, data, report_xml, context=None):
@@ -212,11 +270,15 @@ class LatexParser(report_sxw):
         try :
             tex = body_mako_tpl.render(helper=helper,
                                         _=self.translate_call,
+                                        tex=helper.texescape,
                                         **self.parser_instance.localcontext)
         except Exception:
             msg = exceptions.text_error_template().render()
             _logger.error(msg)
             raise except_osv(_('Latex render!'), msg)
+        finally:
+            _logger.info("Removing temporal directory from helper.")
+            del helper
         bin = self.get_lib(cursor, uid)
         pdf = self.generate_pdf(bin, report_xml, tex, resource_path=resource_path)
         return (pdf, 'pdf')
