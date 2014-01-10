@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-# Copyright (c) 2010 Moldeo Interactive SA (http://moldeo.coop)
+# Copyright (c) 2010 Moldeo Interactive Coop Trab. (http://moldeo.coop)
 # All Right Reserved
 #
 # Author : Cristian S. Rocha (Moldeo Interactive)
@@ -48,7 +48,7 @@ from openerp.report.report_sxw import *
 from openerp import addons
 from openerp import tools
 from openerp.tools.translate import _
-from openerp.osv.osv import except_osv
+from openerp.osv import osv
 
 from report_helper import LatexHelper
 
@@ -103,7 +103,7 @@ class LatexParser(report_sxw):
         if pdflatex_path:
             return pdflatex_path
 
-        raise except_osv(
+        raise osv.except_osv(
                          _('pdflatex executable path is not set'),
                          _('Please install executable on your system' \
                          ' (sudo apt-get install texlive-latex-base)')
@@ -150,7 +150,7 @@ class LatexParser(report_sxw):
                     messages, rerun = self.parse_log(tmp_dir, log_filename)
                     for m in messages:
                         _logger.error("{message}:{lineno}:{line}".format(**m))
-                    raise except_osv(_('Latex error'),
+                    raise osv.except_osv(_('Latex error'),
                           _("The command 'pdflatex' failed with error. Read logs."))
                 messages, rerun = self.parse_log(tmp_dir, log_filename)
                 countrerun = countrerun + 1
@@ -162,7 +162,7 @@ class LatexParser(report_sxw):
             pdf = pdf_file.read()
             pdf_file.close()
         except:
-            raise except_osv(_('Latex error'),
+            raise osv.except_osv(_('Latex error'),
                   _("The command 'pdflatex' failed with error. Read logs."))
         finally:
             if stderr_fd is not None:
@@ -259,11 +259,11 @@ class LatexParser(report_sxw):
             # backward-compatible if path in Windows format
             report_path = report_xml.report_file.replace("\\", "/")
             path = addons.get_module_resource(*report_path.split('/'))
-            resource_path = os.path.dirname(path)
             if path and os.path.exists(path) :
+                resource_path = os.path.dirname(path)
                 template = file(path).read()
         if not template :
-            raise except_osv(_('Error!'), _('Latex report template not found!'))
+            raise osv.except_osv(_('Error!'), _('Latex report template not found!'))
 
         body_mako_tpl = mako_template(template)
         helper = LatexHelper(cursor, uid, report_xml.id, context)
@@ -275,7 +275,7 @@ class LatexParser(report_sxw):
         except Exception:
             msg = exceptions.text_error_template().render()
             _logger.error(msg)
-            raise except_osv(_('Latex render!'), msg)
+            raise osv.except_osv(_('Latex render!'), msg)
         finally:
             _logger.info("Removing temporal directory from helper.")
             del helper
