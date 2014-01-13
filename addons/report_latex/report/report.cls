@@ -4,8 +4,6 @@
 \LoadClass{article}
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[T1]{fontenc}
-\RequirePackage{textcomp}
-\RequirePackage{gensymb}
 \RequirePackage{graphicx}
 \RequirePackage{fancyhdr}
 

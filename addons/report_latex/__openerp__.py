@@ -31,7 +31,7 @@
 {   'author': 'Cristian S. Rocha',
     'auto_install': False,
     'category': 'Reporting',
-    'data': ['security/ir.model.access.csv', 'data.xml'],
+    'data': ['data.xml'],
     'depends': ['base'],
     'description': '\n\n',
     'installable': True,

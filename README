@@ -1,0 +1,10 @@
+TeX is a computer program for typesetting documents, created by Donald Knuth. It takes a suitably prepared computer file and converts it to a form which may be printed on many kinds of printers, including dot-matrix printers, laser printers and high-resolution typesetting machines. LaTeX is a set of macros for TeX that aims at reducing the user's task to the sole role of writing the content, LaTeX taking care of all the formatting process. A number of well-established publishers now use TeX or LaTeX to typeset books and mathematical journals. It is also well appreciated by users caring about typography, consistent formatting, efficient collaborative writing and open formats.
+
+The OpenERP-addon combine "Maki Template language" and Latex to generate high-end quality reports. Latex is not a simple language but you don't need be expert for standard reports. But if you need more complex design perhaps you will be crazy in the begining, but you will love it at last.
+
+You must install Latex in your server to make it works. In debian and ubuntu you can execute:
+
+apt-get install texlive-latex-base texlive-fonts-recommended
+
+Latex: http://latex-project.org/
+Mako: http://www.makotemplates.org/
