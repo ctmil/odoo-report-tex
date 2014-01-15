@@ -86,7 +86,7 @@ class ReportXML(osv.osv):
     def create(self, cursor, user, vals, context=None):
         "Create report and register it"
         res = super(ReportXML, self).create(cursor, user, vals, context)
-        if vals.get('report_type','') == 'webkit':
+        if vals.get('report_type','') == 'latex':
             # I really look forward to virtual functions :S
             register_report(
                         vals['report_name'],
@@ -100,7 +100,7 @@ class ReportXML(osv.osv):
         if isinstance(ids, (int, long)):
             ids = [ids,]
         for rep in self.browse(cr, uid, ids, context=context):
-            if rep.report_type != 'webkit':
+            if rep.report_type != 'latex':
                 continue
             if vals.get('report_name', False) and \
                 vals['report_name'] != rep.report_name:
