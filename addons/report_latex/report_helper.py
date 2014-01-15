@@ -67,6 +67,10 @@ def chunks(l, n):
     for i in xrange(0, len(l), n):
         yield l[i:i+n]
 
+lang_map = {
+    'es': 'spanish',
+}
+
 class LatexHelper(object):
     """Set of usefull report helper"""
     def __init__(self, cursor, uid, report_id, context):
@@ -77,6 +81,10 @@ class LatexHelper(object):
         self.report_id = report_id
         self.fs_images = []
         self.tmp_dir = tempfile.mkdtemp()
+        self._lang = None
+        if 'lang' in context:
+            lang = context['lang'].split('_',1)[0]
+            self._lang = lang_map[lang] if lang in lang_map else None
 
     def __del__(self):
         shutil.rmtree(self.tmp_dir)
@@ -118,5 +126,12 @@ class LatexHelper(object):
     def texescape(self, s):
         s = s.replace("\\","\\\\").replace("%","\\%").replace("$","\\$").replace("{","\\{").replace("}","\\}").replace("\n", "\\\\")
         return s
+
+    def set_language(self):
+        return """
+               \usepackage[%s]{babel}
+               \usepackage[utf8]{inputenc}
+               \usepackage[T1]{fontenc}
+               """ % (self._lang or 'interlingua')
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -1,5 +1,5 @@
 \documentclass{report}
-\usepackage[spanish]{babel}
+${helper.set_language()}
 
 \title{Resumen de Clientes}
 \author{${user.name}}
@@ -13,19 +13,19 @@
 <% accum = 0 %>
 
 % for par in objects:  
-\section{${par.name}}
+\section{${par.name | tex}}
 
 <% accum += 1%>
 
 \begin{itemize}
 %	if par.document_type_id:
-	\item ${par.document_type_id.name}: ${par.document_number}
+	\item ${par.document_type_id.name | tex }: ${par.document_number}
 %	endif
 %	if par.street:
-	\item ${par.street}
+	\item ${par.street | tex }
 %	endif
 %	if par.street2:
-	\item ${par.street2}
+	\item ${par.street2 | tex }
 %	endif
 	\item Debe: ${par.debit}
 \end{itemize}
