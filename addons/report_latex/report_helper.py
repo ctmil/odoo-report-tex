@@ -39,6 +39,9 @@ import os
 import os.path
 import shutil
 import imghdr
+import logging
+
+_logger = logging.getLogger(__name__)
 
 img_template = """
 {{
@@ -87,6 +90,7 @@ class LatexHelper(object):
             self._lang = lang_map[lang] if lang in lang_map else None
 
     def __del__(self):
+        _logger.debug("Removing temporal directory: %s" % self.tmp_dir)
         shutil.rmtree(self.tmp_dir)
 
     def putImage(self, image, **args):
