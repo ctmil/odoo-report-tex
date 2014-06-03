@@ -128,7 +128,7 @@ class LatexHelper(object):
         return img_template.format(0, size_cm[0], size_cm[1], size_px[0], size_px[1], rdata)
 
     def texescape(self, s):
-        s = s.replace("\\","\\\\").replace("%","\\%").replace("$","\\$").replace("{","\\{").replace("}","\\}").replace("\n", "\\\\")
+        s = s.replace("\\","\\\\").replace("%","\\%").replace("$","\\$").replace("{","\\{").replace("}","\\}").replace("\n", "\\\\").replace("#", "\\#")
         return s
 
     def set_language(self):
