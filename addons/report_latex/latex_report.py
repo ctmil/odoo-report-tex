@@ -138,6 +138,7 @@ class LatexParser(report_sxw):
         _logger.debug("Environment Variables: %s" % env)
 
         stderr_fd, stderr_path = tempfile.mkstemp(dir=tmp_dir,text=True)
+        _errors = True
         try:
             rerun = True
             countrerun = 1
@@ -161,17 +162,21 @@ class LatexParser(report_sxw):
             pdf_file = open(os.path.join(tmp_dir, pdf_filename), 'rb')
             pdf = pdf_file.read()
             pdf_file.close()
+            _errors = False
         except:
             raise osv.except_osv(_('Latex error'),
                   _("The command 'pdflatex' failed with error. Read logs."))
         finally:
             if stderr_fd is not None:
                 os.close(stderr_fd)
-            try:
-                _logger.debug('Removing temporal directory: %s', tmp_dir)
-                shutil.rmtree(tmp_dir)
-            except (OSError, IOError), exc:
-                _logger.error('Cannot remove dir %s: %s', tmp_dir, exc)
+            if not _errors:
+                try:
+                    _logger.debug('Removing temporal directory: %s', tmp_dir)
+                    shutil.rmtree(tmp_dir)
+                except (OSError, IOError), exc:
+                    _logger.error('Cannot remove dir %s: %s', tmp_dir, exc)
+            else:
+                pass
         return pdf
 
     def translate_call(self, src):
