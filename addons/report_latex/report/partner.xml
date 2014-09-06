@@ -1,13 +1,13 @@
 <?xml version="1.0" ?>
 <openerp>
     <data noupdate="1">
-		<report id="latex_partner_print"
+	    <report
 		    string="Partner resume"
+		    id="latex_partner_print"
 		    model="res.partner"
+		    name="latex.resume_partner.print"
+		    file="report_latex/report/partner.tex"
 		    report_type="latex"
-		    name="resume_partner.print"
-		    rml="report_latex/report/partner.tex"
-		    menu="True"
-		    auto="False"/>
+		    />
     </data>
 </openerp>
