@@ -31,11 +31,12 @@
 {   'author': 'Cristian S. Rocha',
     'auto_install': False,
     'category': 'Reporting',
-    'data': ['data.xml'],
     'depends': ['base'],
     'description': '\n\n',
     'installable': True,
     'name': 'Latex Report Engine',
     'url': 'http://moldeo.coop/',
+    'demo': ['report/partner.xml'],
+    'test': ['tests/test_partner.yml'],
     'version': '0.3'}
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -1,34 +1,4 @@
 # -*- coding: utf-8 -*-
-##############################################################################
-#
-# Copyright (c) 2010 Moldeo Interactive Coop Trab. (http://moldeo.coop)
-# All Right Reserved
-#
-# Author : Cristian S. Rocha (Moldeo Interactive)
-#
-# WARNING: This program as such is intended to be used by professional
-# programmers who take the whole responsability of assessing all potential
-# consequences resulting from its eventual inadequacies and bugs
-# End users who are looking for a ready-to-use solution with commercial
-# garantees and support are strongly adviced to contract a Free Software
-# Service Company
-#
-# This program is Free Software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-#
-##############################################################################
-
 import subprocess
 import os
 import sys
@@ -45,10 +15,11 @@ from mako import exceptions
 from openerp import netsvc
 from openerp import pooler
 from openerp.report.report_sxw import *
-from openerp import addons
+#from openerp import addons
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.osv import osv
+from openerp.modules.module import get_module_resource
 
 from report_helper import LatexHelper
 
@@ -70,6 +41,7 @@ def mako_template(text):
 
     This template uses UTF-8 encoding
     """
+    text = text.replace('\\\\\n','\\\\ \n')
     tmp_lookup  = TemplateLookup() #we need it in order to allow inclusion and inheritance
     return Template(text, input_encoding='utf-8', output_encoding='utf-8', lookup=tmp_lookup)
 
@@ -77,12 +49,11 @@ class LatexParser(report_sxw):
     """Custom class that use latexpdf to render PDF reports
        Code partially taken from report latex. Thanks guys :)
     """
-    def __init__(self, name, table, rml=False, parser=False,
-        header=True, store=False):
+    def __init__(self, name, table, rml=False, parser=rml_parse,
+        header=True, store=False, register=False):
         self.parser_instance = False
         self.localcontext = {}
-        report_sxw.__init__(self, name, table, rml, parser,
-            header, store)
+        super(LatexParser, self).__init__(name, table, rml, parser, header, store)
 
     def get_lib(self, cursor, uid):
         """Return the pdflatex path"""
@@ -96,7 +67,7 @@ class LatexParser(report_sxw):
                     defpath.append(os.getcwd())
                     if tools.config['root_path']:
                         defpath.append(os.path.dirname(tools.config['root_path']))
-                pdflatex_path = tools.which('pdflatex', path=os.pathsep.join(defpath))
+                pdflatex_path = tools.which('xelatex', path=os.pathsep.join(defpath))
             except IOError:
                 pdflatex_path = None
 
@@ -210,7 +181,7 @@ class LatexParser(report_sxw):
                     })
                 elif RERUNTEXT in line:
                     rerun = True
-                elif "LaTeX Warning" in line:
+                elif "Warning:" in line:
                     warnings.append(line.strip().split(':')[1])
             elif state==LOGWAITLINE:
                 if line[0] == 'l': # Get line number
@@ -263,7 +234,7 @@ class LatexParser(report_sxw):
         if report_xml.report_file :
             # backward-compatible if path in Windows format
             report_path = report_xml.report_file.replace("\\", "/")
-            path = addons.get_module_resource(*report_path.split('/'))
+            path = get_module_resource(*report_path.split('/'))
             if path and os.path.exists(path) :
                 resource_path = os.path.dirname(path)
                 template = file(path).read()
@@ -302,11 +273,11 @@ class LatexParser(report_sxw):
                                        uid,
                                        report_xml_ids[0],
                                        context=context)
-            report_xml.report_rml = None
-            report_xml.report_rml_content = None
-            report_xml.report_sxw_content_data = None
-            report_xml.report_sxw_content = None
-            report_xml.report_sxw = None
+            #report_xml.report_rml = None
+            #report_xml.report_rml_content = None
+            #report_xml.report_sxw_content_data = None
+            #report_xml.report_sxw_content = None
+            #report_xml.report_sxw = None
         else:
             return super(LatexParser, self).create(cursor, uid, ids, data, context)
         if report_xml.report_type != 'latex' :

@@ -1,5 +1,12 @@
 \documentclass{report}
 ${helper.set_language()}
+\usepackage{xltxtra}
+\usepackage{longtable}
+
+\usepackage{fontspec}
+\setmainfont{FreeSans}
+%% \setmainfont{Ryman Eco}
+%% \setmainfont{Gentium Book Basic}
 
 \title{Resumen de Clientes}
 \author{${user.name}}
@@ -8,31 +15,23 @@ ${helper.set_language()}
 
 \begin{document}
 
-\maketitle
-
-<% accum = 0 %>
-
+\begin{longtable}{|p{0.25\textwidth}|p{0.75\textwidth}|}
+	\hline
+	\textbf{Name} & \textbf{Address} \\
+	\hline
+\endfirsthead
+	\hline
+	\textbf{Name} & \textbf{Address} \\
+	\hline
+\endhead
+	\hline
+\endfoot
+	\hline
+\endlastfoot
 % for par in objects:  
-\section{${par.name | tex}}
-
-<% accum += 1%>
-
-\begin{itemize}
-%	if par.document_type_id:
-	\item ${par.document_type_id.name | tex }: ${par.document_number}
-%	endif
-%	if par.street:
-	\item ${par.street | tex }
-%	endif
-%	if par.street2:
-	\item ${par.street2 | tex }
-%	endif
-	\item Debe: ${par.debit}
-\end{itemize}
-
-\fancyfoot[C]{No de clientes ${accum}}
-
+	${par.name | tex } & ${par.street or "" | tex } \\
 % endfor
+\end{longtable}
 
 \end{document}
 
