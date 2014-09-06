@@ -15,7 +15,6 @@ from mako import exceptions
 from openerp import netsvc
 from openerp import pooler
 from openerp.report.report_sxw import *
-#from openerp import addons
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.osv import osv
