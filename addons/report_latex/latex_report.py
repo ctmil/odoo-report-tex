@@ -55,26 +55,26 @@ class LatexParser(report_sxw):
         super(LatexParser, self).__init__(name, table, rml, parser, header, store)
 
     def get_lib(self, cursor, uid):
-        """Return the pdflatex path"""
+        """Return the xelatex path"""
         proxy = self.pool.get('ir.config_parameter')
-        pdflatex_path = proxy.get_param(cursor, uid, 'pdflatex_path')
+        xelatex_path = proxy.get_param(cursor, uid, 'xelatex_path')
 
-        if not pdflatex_path:
+        if not xelatex_path:
             try:
                 defpath = os.environ.get('PATH', os.defpath).split(os.pathsep)
                 if hasattr(sys, 'frozen'):
                     defpath.append(os.getcwd())
                     if tools.config['root_path']:
                         defpath.append(os.path.dirname(tools.config['root_path']))
-                pdflatex_path = tools.which('xelatex', path=os.pathsep.join(defpath))
+                xelatex_path = tools.which('xelatex', path=os.pathsep.join(defpath))
             except IOError:
-                pdflatex_path = None
+                xelatex_path = None
 
-        if pdflatex_path:
-            return pdflatex_path
+        if xelatex_path:
+            return xelatex_path
 
         raise osv.except_osv(
-                         _('pdflatex executable path is not set'),
+                         _('xelatex executable path is not set'),
                          _('Please install executable on your system' \
                          ' (sudo apt-get install texlive-latex-base)')
                         )
@@ -85,7 +85,7 @@ class LatexParser(report_sxw):
         if comm_path:
             command = [comm_path]
         else:
-            command = ['pdflatex']
+            command = ['xelatex']
         command.extend(['-output-directory', tmp_dir])
         command.extend(['-interaction', 'batchmode'])
 
@@ -122,7 +122,7 @@ class LatexParser(report_sxw):
                     for m in messages:
                         _logger.error("{message}:{lineno}:{line}".format(**m))
                     raise osv.except_osv(_('Latex error'),
-                          _("The command 'pdflatex' failed with error. Read logs."))
+                          _("The command 'xelatex' failed with error. Read logs."))
                 messages, rerun = self.parse_log(tmp_dir, log_filename)
                 countrerun = countrerun + 1
 
@@ -135,7 +135,7 @@ class LatexParser(report_sxw):
             _errors = False
         except:
             raise osv.except_osv(_('Latex error'),
-                  _("The command 'pdflatex' failed with error. Read logs."))
+                  _("The command 'xelatex' failed with error. Read logs."))
         finally:
             if stderr_fd is not None:
                 os.close(stderr_fd)
