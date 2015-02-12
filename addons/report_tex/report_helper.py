@@ -65,6 +65,7 @@ class LatexHelper(object):
 
     def putImage(self, image, **args):
         # Put image in storage
+        if not image: return ""
         binimg = base64.b64decode(image)
         suffix = imghdr.what('', binimg)
         img_file_fd, img_filename = tempfile.mkstemp(suffix='.%s' % suffix, dir=self.tmp_dir)
