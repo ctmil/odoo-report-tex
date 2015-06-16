@@ -200,7 +200,7 @@ class LatexParser(report_sxw):
             elif state==LOGINHELP:
                 if line=="\n": # No help, then end message
                     state = LOGNOMESSAGE
-                else: 
+                else:
                     cleanline = line.strip()
                     messages[-1].update({
                         'help': "%s %s" % (messages[-1].get('help', ''), cleanline),
@@ -215,7 +215,7 @@ class LatexParser(report_sxw):
         """generate the PDF"""
         if context is None:
             context={}
-        if report_xml.report_type != 'latex':
+        if report_xml.report_type != 'tex':
             return super(LatexParser,self).create_single_pdf(cursor, uid, ids, data, report_xml, context=context)
 
         self.parser_instance = self.parser(cursor,
@@ -279,7 +279,7 @@ class LatexParser(report_sxw):
             #report_xml.report_sxw = None
         else:
             return super(LatexParser, self).create(cursor, uid, ids, data, context)
-        if report_xml.report_type != 'latex' :
+        if report_xml.report_type != 'tex' :
             return super(LatexParser, self).create(cursor, uid, ids, data, context)
         result = self.create_source_pdf(cursor, uid, ids, data, report_xml, context)
         if not result:

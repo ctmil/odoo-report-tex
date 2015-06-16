@@ -3,11 +3,11 @@
     <data noupdate="1">
 	    <report
 		    string="Partner resume"
-		    id="latex_partner_print"
+		    id="tex_partner_print"
 		    model="res.partner"
 		    name="latex.resume_partner.print"
-		    file="report_latex/report/partner.tex"
-		    report_type="latex"
+		    file="report_tex/report/partner.tex"
+		    report_type="tex"
 		    />
     </data>
 </openerp>
