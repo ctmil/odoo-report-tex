@@ -24,7 +24,7 @@ class ir_actions_report_xml(models.Model):
         else:
             cr.execute("SELECT * FROM ir_act_report_xml"
                        " WHERE report_name=%s and report_type=%s",
-                       (name, 'latex'))
+                       (name, 'tex'))
             r = cr.dictfetchone()
             if r:
                 if r['parser']:
