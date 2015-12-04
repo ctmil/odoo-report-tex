@@ -5,7 +5,7 @@
 		    string="Partner resume"
 		    id="tex_partner_print"
 		    model="res.partner"
-		    name="latex.resume_partner.print"
+		    name="tex.resume_partner.print"
 		    file="report_tex/report/partner.tex"
 		    report_type="tex"
 		    />
